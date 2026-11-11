@@ -1,0 +1,40 @@
+/* The bookshelf: every story as a photo-book cover, grouped by when it was last written in. */
+.sh { max-width: 1240px; margin: 0 auto; padding: 48px 40px 120px; }
+.sh-head { display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: flex-end; margin-bottom: 34px; }
+.sh-head > div { margin-right: auto; }
+.sh-head h1 { margin: 0; font-size: clamp(2.4rem, 1.6rem + 2.4vw, 4rem); font-weight: 800; line-height: 1.1; }
+.sh-head p { margin: 6px 0 0; color: var(--ink-soft); font-family: var(--font-hand), cursive; font-size: 1.5rem; }
+.sh-head a { color: var(--ink-soft); font-family: var(--font-hand), cursive; font-size: 1.35rem; text-decoration: underline wavy color-mix(in srgb, var(--ink-soft) 60%, transparent); text-underline-offset: 4px; }
+.sh-head a:hover { color: var(--sun); }
+.sh-head input { width: 220px; padding: 6px 4px; border: 0; border-bottom: 2px dashed color-mix(in srgb, var(--ink) 30%, transparent); outline: 0; background: none; color: var(--ink); font-family: var(--font-hand), cursive; font-size: 1.35rem; }
+.sh-head input:focus { border-color: var(--sun); }
+
+.sh h2 { margin: 40px 0 22px; color: var(--sun); font-family: var(--font-hand), cursive; font-size: 2rem; font-weight: 700; rotate: -1.5deg; transform-origin: 0 50%; }
+.sh h2::after { content: ""; display: block; width: 3.2em; height: 8px; margin-top: 2px; background: repeating-radial-gradient(circle at 6px -4px, transparent 0 7px, currentColor 7px 9px, transparent 9px 12px) 0 0 / 12px 8px repeat-x; opacity: 0.6; }
+.sh-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 34px 30px; }
+
+.sh-book, .sh-new { display: flex; flex-direction: column; gap: 4px; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.sh-cover { position: relative; display: block; aspect-ratio: 1; margin-bottom: 12px; padding: 9px 9px 9px; background: var(--paper); border-radius: 3px; box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45); rotate: var(--tilt, 0deg); transition: rotate 0.25s, translate 0.25s, box-shadow 0.25s; }
+.sh-cover::before { content: ""; position: absolute; top: -11px; left: 50%; width: 74px; height: 22px; translate: -50% 0; rotate: -3deg; background: color-mix(in srgb, var(--sun) 70%, transparent); z-index: 1; }
+.sh-cover > img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 2px; }
+.sh-blank { display: block; height: 100%; padding: 16px; overflow: hidden; background: #f3e9cf; color: var(--paper-ink); font-size: 1.05rem; line-height: 1.5; border-radius: 2px; mask-image: linear-gradient(#000 60%, transparent); }
+.sh-book:hover .sh-cover, .sh-book:focus-visible .sh-cover { rotate: 0deg; translate: 0 -8px; box-shadow: 0 24px 44px rgba(0, 0, 0, 0.55); }
+.sh-book:focus-visible, .sh-new:focus-visible { outline: 0; }
+.sh-more { position: absolute; right: -14px; bottom: -12px; display: flex; }
+.sh-more img { width: 46px; height: 46px; margin-left: -14px; padding: 3px; object-fit: cover; background: var(--paper); border-radius: 2px; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4); }
+.sh-more img:nth-child(odd) { rotate: 6deg; }
+.sh-more img:nth-child(even) { rotate: -5deg; }
+.sh-mine { position: absolute; left: -10px; top: 18px; padding: 1px 12px 3px; rotate: -6deg; background: var(--mint); color: #173a30; font-family: var(--font-hand), cursive; font-size: 1.15rem; font-weight: 700; border-radius: 3px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35); z-index: 2; }
+.sh-book strong { font-size: 1.35rem; font-weight: 800; line-height: 1.2; }
+.sh-about { color: var(--ink); opacity: 0.85; font-family: var(--font-hand), cursive; font-size: 1.2rem; line-height: 1.15; }
+.sh-facts, .sh-who { color: var(--ink-soft); font-family: var(--font-hand), cursive; font-size: 1.1rem; line-height: 1.2; }
+.sh-who { color: color-mix(in srgb, var(--sky) 80%, var(--ink-soft)); }
+
+.sh-new { align-items: center; justify-content: center; gap: 8px; aspect-ratio: 1; border: 3px dashed color-mix(in srgb, var(--sun) 55%, transparent); border-radius: 18px; color: var(--sun); text-align: center; transition: background 0.2s, scale 0.2s, rotate 0.2s; }
+.sh-new svg { width: 64px; height: 64px; }
+.sh-new strong { font-size: 1.4rem; font-weight: 800; }
+.sh-new span { color: var(--ink-soft); font-family: var(--font-hand), cursive; font-size: 1.3rem; }
+.sh-new:hover, .sh-new:focus-visible { background: color-mix(in srgb, var(--sun) 12%, transparent); scale: 1.03; rotate: -1.5deg; }
+.sh-new:hover svg { animation: bob 0.9s ease-in-out infinite; }
+.sh-none { color: var(--ink-soft); font-family: var(--font-hand), cursive; font-size: 1.5rem; }
+@media (max-width: 600px) { .sh { padding: 28px 16px 80px; } .sh-row { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 26px 18px; } }

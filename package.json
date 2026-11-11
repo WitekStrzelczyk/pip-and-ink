@@ -1,0 +1,25 @@
+{
+  "name": "pip-and-ink",
+  "version": "0.1.0",
+  "description": "A story-writing app for young writers: a playful listener reacts, offers better words, and a local image model illustrates each part.",
+  "private": true,
+  "scripts": {
+    "dev": "bun --bun next dev -H 127.0.0.1",
+    "dev:keychain": "envchain ${GLM_KEYCHAIN:?set GLM_KEYCHAIN to your envchain namespace} bun --bun next dev -H 127.0.0.1",
+    "dev:mock": "GLM_MOCK=1 bun --bun next dev -H 127.0.0.1",
+    "build": "bun --bun next build",
+    "start": "bun --bun next start -H 127.0.0.1",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^16.4.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}

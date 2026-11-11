@@ -1,0 +1,19 @@
+# dependencies and build output
+node_modules/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+
+# everything the app writes: stories, pictures, history, logs (private by nature)
+data/
+
+# model weights (4-12 GB) and CLI test images
+models/
+out/
+
+# secrets and local tooling
+.env
+.env.*
+!.env.example
+.claude/
+.DS_Store

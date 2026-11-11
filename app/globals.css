@@ -1,0 +1,585 @@
+:root {
+  --page: #33312f;
+  --page-deep: #2b2a28;
+  --ink: #fbf6ec;
+  --ink-soft: #a8a29a;
+  --sun: #ffd23f;
+  --mint: #8fe3c8;
+  --rose: #ff9db5;
+  --sky: #7cc8ff;
+  --paper: #fbf3df;
+  --paper-ink: #4a4338;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; min-height: 100%; }
+
+body {
+  background: radial-gradient(1200px 700px at 30% 0%, #3b3936 0%, var(--page) 55%, var(--page-deep) 100%) fixed;
+  color: var(--ink);
+  font-family: var(--font-story), Georgia, serif;
+  font-variation-settings: "SOFT" 100;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: color-mix(in srgb, var(--sun) 45%, transparent); }
+
+.desk {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 56px;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 56px 48px 120px;
+}
+
+/* ---------- the page you write on ---------- */
+
+.title {
+  display: block;
+  width: 100%;
+  margin: 0 0 28px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 800;
+  font-size: clamp(2.4rem, 1.6rem + 2.4vw, 4rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  caret-color: var(--sun);
+}
+
+.title::placeholder, .words::placeholder { color: color-mix(in srgb, var(--ink) 28%, transparent); }
+
+.sheet {
+  position: relative;
+  font-size: clamp(1.5rem, 1.15rem + 0.9vw, 2rem);
+  line-height: 2.3; /* room above every line for scribbled word ideas */
+  font-weight: 420;
+}
+
+.mirror, .words {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.mirror {
+  position: relative;
+  z-index: 2;
+  min-height: 60vh;
+  color: transparent;
+  pointer-events: none;
+  user-select: none;
+}
+
+.words {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  resize: none;
+  overflow: hidden;
+  outline: 0;
+  background: none;
+  color: var(--ink);
+  caret-color: var(--sun);
+}
+
+/* a word that could be stronger: wavy line under it, ideas scribbled above */
+.mark { position: relative; }
+.mark.syn {
+  text-decoration: underline wavy var(--sun);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 7px;
+}
+.mark.adj { display: inline-block; width: 0; }
+.mark.syn.quiet { text-decoration-color: color-mix(in srgb, var(--sun) 45%, transparent); }
+
+/* Pip's reaction: Pip peeks over the end of the sentence; click for the cloud */
+.mark.spot { display: inline-block; width: 0; }
+.bubble {
+  position: absolute;
+  font: inherit; /* buttons do not inherit the story's size on their own */
+  left: -1.5em;
+  bottom: 0.72em;
+  width: 1.5em;
+  height: 0.81em;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--sky);
+  cursor: pointer;
+  pointer-events: auto;
+  animation: peek 3.2s ease-in-out infinite;
+}
+.bubble::after { content: ""; position: absolute; inset: -0.35em -0.3em -0.1em; } /* easy to hit */
+.bubble svg { display: block; width: 100%; height: 100%; overflow: visible; transition: transform 0.15s; transform-origin: 50% 100%; }
+.bubble:hover svg, .bubble[aria-expanded="true"] svg { transform: scale(1.2); }
+.bubble.new { animation: hey 1.6s ease-in-out 3, peek 3.2s ease-in-out 4.8s infinite; }
+.bubble .blink { animation: blink 4s infinite; transform-origin: center; transform-box: fill-box; }
+@keyframes peek { 0%, 100% { transform: translateY(5px); } 40%, 70% { transform: none; } }
+@keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+@keyframes hey {
+  0%, 100% { transform: none; }
+  30% { transform: translateY(-7px) rotate(-8deg) scale(1.2); }
+  60% { transform: translateY(0) rotate(5deg); }
+}
+@media (prefers-reduced-motion: reduce) { .bubble, .bubble .blink { animation: none; } }
+
+.cloud {
+  position: absolute;
+  left: -0.75em;
+  bottom: 2.3em;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+  width: max-content;
+  max-width: min(17em, 78vw);
+  padding: 0.5em 0.9em 0.6em;
+  border-radius: 1.6em 1.8em 1.7em 1.5em / 1.5em 1.6em 1.8em 1.7em;
+  background: var(--sky);
+  color: #17324a;
+  font-family: var(--font-hand), cursive;
+  font-size: 0.9em;
+  line-height: 1.1;
+  white-space: normal;
+  pointer-events: auto;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+  translate: calc(-50% + var(--nudge, 0px)) 0;
+  animation: puff 0.35s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+  transform-origin: 50% 100%;
+}
+.cloud::before, .cloud::after { /* two little puffs leading down to the bubble */
+  content: "";
+  position: absolute;
+  left: calc(50% - var(--nudge, 0px));
+  border-radius: 50%;
+  background: var(--sky);
+}
+.cloud::before { bottom: -0.42em; width: 0.5em; height: 0.5em; margin-left: -0.1em; }
+.cloud::after { bottom: -0.75em; width: 0.26em; height: 0.26em; margin-left: -0.3em; }
+.cloud-cheer { font-weight: 700; font-size: 1.1em; }
+.cloud-ask { opacity: 0.85; }
+@keyframes puff {
+  from { opacity: 0; transform: scale(0.5) translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.scribble {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - 0.3em);
+  display: flex;
+  gap: 0.15em;
+  align-items: baseline;
+  white-space: nowrap;
+  transform: translateX(-50%) rotate(-3deg);
+  transform-origin: 50% 100%;
+  font-family: var(--font-hand), cursive;
+  font-size: 0.8em;
+  line-height: 1;
+  color: var(--sun);
+  pointer-events: auto;
+  animation: jot 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+.mark.adj .scribble { bottom: 0.95em; flex-direction: column; align-items: center; gap: 0; }
+.scribble .row { display: flex; gap: 0.15em; align-items: baseline; }
+.scribble .or { opacity: 0.55; font-size: 0.8em; }
+.scribble button {
+  padding: 0 0.12em;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.15s;
+}
+.scribble button:hover { background: color-mix(in srgb, var(--sun) 22%, transparent); transform: scale(1.12) rotate(2deg); }
+/* a synonym is swapped in: the hint goes quiet, the writer's own word stays within reach */
+.mark.syn.tried { text-decoration-color: color-mix(in srgb, var(--ink-soft) 55%, transparent); }
+.mark.syn.tried .scribble { color: var(--ink-soft); animation: none; }
+.mark.syn.tried .scribble button.mine { text-decoration: underline dotted; text-underline-offset: 3px; }
+.mark.syn.tried .scribble button:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 14%, transparent); }
+.scribble .caret { width: 0.7em; height: 0.5em; margin-top: -0.05em; }
+
+@keyframes jot {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px) rotate(-10deg) scale(0.7); }
+  to { opacity: 1; transform: translateX(-50%) rotate(-3deg); }
+}
+
+.foot {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  padding: 14px 48px;
+  font-family: var(--font-hand), cursive;
+  font-size: 1.25rem;
+  color: var(--ink-soft);
+  background: linear-gradient(transparent, var(--page-deep) 60%);
+  pointer-events: none;
+}
+.foot > * { pointer-events: auto; }
+.foot button, .foot a {
+  border: 0; background: none; color: inherit; font: inherit; cursor: pointer;
+  text-decoration: underline wavy color-mix(in srgb, var(--ink-soft) 60%, transparent); text-underline-offset: 4px;
+}
+.foot button:hover, .foot a:hover { color: var(--sun); }
+
+/* ---------- the margin: Pip listens, asks, draws ---------- */
+
+.margin {
+  position: sticky;
+  top: 40px;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  font-family: var(--font-hand), cursive;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 14px 10px 30px 14px; /* room for the tilted frame and its shadow */
+  margin: -14px -10px 0 -14px;
+}
+
+.pip { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; color: var(--ink-soft); }
+.pip svg { width: 44px; height: 44px; flex: none; }
+.pip.busy svg { animation: bob 0.9s ease-in-out infinite; }
+.dots span { display: inline-block; animation: dot 1.2s infinite; }
+.dots span:nth-child(2) { animation-delay: 0.15s; }
+.dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes dot { 0%, 60%, 100% { transform: none; opacity: 0.4; } 30% { transform: translateY(-5px); opacity: 1; } }
+@keyframes bob { 50% { transform: translateY(-4px) rotate(-6deg); } }
+
+.clock { display: flex; gap: 18px; margin: -14px 0 0 54px; font-size: 1.15rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.clock .live { color: var(--sun); }
+
+.note { margin: 0; animation: arrive 0.6s cubic-bezier(0.2, 1.3, 0.4, 1) both; transform-origin: 0 50%; }
+.note.cheer { font-size: 2.5rem; font-weight: 700; line-height: 1.05; color: var(--sun); rotate: -2.5deg; }
+.note.ask { display: flex; gap: 10px; align-items: flex-start; font-size: 2rem; line-height: 1.15; color: var(--ink); }
+.note.ask:nth-of-type(odd) { rotate: 1.2deg; }
+.note.ask:nth-of-type(even) { rotate: -1.4deg; margin-left: 22px; }
+.note.ask svg { width: 38px; height: 28px; flex: none; margin-top: 6px; color: var(--sun); }
+.note.guess { font-size: 1.7rem; line-height: 1.15; color: var(--mint); rotate: 1.5deg; margin-left: 10px; }
+.note.hello { font-size: 2rem; line-height: 1.2; color: var(--ink-soft); rotate: -1.5deg; }
+.note.trouble { font-size: 1.2rem; color: var(--rose); }
+
+@keyframes arrive {
+  from { opacity: 0; transform: translateX(26px) rotate(4deg) scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+
+.frame {
+  position: relative;
+  width: min(100%, 42vh); /* leave room for the notes on short screens */
+  margin: 4px 6px 0;
+  padding: 12px 12px 10px;
+  background: var(--paper);
+  border-radius: 4px;
+  rotate: -1.6deg;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), 0 2px 0 rgba(255, 255, 255, 0.5) inset;
+  animation: arrive 0.7s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+.frame::before { /* a strip of tape */
+  content: "";
+  position: absolute;
+  top: -12px; left: 50%;
+  width: 96px; height: 26px;
+  translate: -50% 0; rotate: 2deg;
+  background: color-mix(in srgb, var(--sun) 70%, transparent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.canvas { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 2px; background: #f3e9cf; }
+.canvas img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.canvas img.fresh { animation: reveal 2.2s ease both; }
+/* another part's picture: slides in like the next photo in a pile, the way you are scrolling */
+.canvas img.arriving { animation: arrive 0.65s cubic-bezier(0.2, 0.9, 0.25, 1.1) both; }
+.canvas img.leaving { animation: leave 0.65s ease both; }
+.canvas img.down { --from: 100%; --to: -30%; }
+.canvas img.up { --from: -100%; --to: 30%; }
+@keyframes arrive { from { transform: translateY(var(--from)) rotate(4deg) scale(1.05); } to { transform: none; } }
+@keyframes leave { to { transform: translateY(var(--to)) scale(0.92); opacity: 0; filter: blur(3px); } }
+.frame .caption { animation: caption-in 0.5s ease both; }
+@keyframes caption-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes reveal {
+  0% { opacity: 0; filter: blur(18px) saturate(0.2); transform: scale(1.06); }
+  60% { opacity: 1; filter: blur(4px) saturate(0.8); }
+  100% { opacity: 1; filter: none; transform: none; }
+}
+/* hover the picture to read what the painter was asked for */
+.recipe {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px;
+  overflow-y: auto;
+  background: linear-gradient(transparent 0%, rgba(30, 28, 26, 0.9) 35%);
+  color: var(--ink);
+  font-family: var(--font-story), Georgia, serif;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+.recipe p { margin: 0; }
+/* draw the picture again */
+.again {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  padding: 9px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(30, 28, 26, 0.72);
+  color: var(--sun);
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.15s, transform 0.3s;
+}
+.again svg { display: block; width: 100%; height: 100%; }
+.frame:hover .again, .again:focus-visible { opacity: 1; }
+.again:hover { transform: rotate(140deg) scale(1.1); }
+.again.info { right: 58px; padding: 0; font: 700 1.25rem/40px var(--font-story), Georgia, serif; font-style: italic; }
+.again.info:hover { transform: scale(1.1); }
+.again.info.on { opacity: 1; background: var(--sun); color: #3a3220; }
+
+/* point at the picture: see it big, next to the story */
+.zoom { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 24px 440px 24px 24px; pointer-events: none; }
+.zoom img { display: block; width: min(100%, 86vh, 768px); aspect-ratio: 1; object-fit: cover; padding: 8px; background: var(--paper); border-radius: 6px; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.8); animation: puff 0.2s ease both; }
+@media (max-width: 980px) { .zoom { padding: 16px; } }
+
+/* what Pip has understood about the story */
+.world { display: flex; flex-direction: column; gap: 10px; padding-top: 6px; border-top: 2px dashed color-mix(in srgb, var(--ink) 16%, transparent); }
+.world-about { margin: 8px 0 0; color: var(--ink-soft); font-family: var(--font-hand), cursive; font-size: 1.25rem; line-height: 1.15; }
+.who { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
+.who strong { font-family: var(--font-hand), cursive; font-size: 1.5rem; line-height: 1; color: var(--sun); }
+.who.place strong { color: var(--mint); }
+.who em { color: var(--ink-soft); font-size: 0.8rem; }
+.who .facts { display: flex; flex-wrap: wrap; gap: 4px; width: 100%; }
+.who .facts span { padding: 1px 8px 2px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 9%, transparent); font-size: 0.9rem; line-height: 1.4; }
+.who .facts span.new { background: color-mix(in srgb, var(--mint) 35%, transparent); animation: hey 1.2s ease-in-out 2; }
+.recipe small { color: var(--sun); font-size: 0.72rem; }
+
+.caption { min-height: 1.6em; padding-top: 8px; text-align: center; font-size: 1.6rem; line-height: 1.1; color: var(--paper-ink); }
+
+.drawing {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 6px;
+  color: var(--paper-ink);
+  font-size: 1.5rem;
+}
+.drawing.over { inset: auto 8px 8px auto; padding: 4px 12px; border-radius: 999px; background: color-mix(in srgb, var(--paper) 88%, transparent); grid-auto-flow: column; align-items: center; font-size: 1.2rem; }
+.drawing svg { width: 54px; height: 54px; animation: sketching 1s ease-in-out infinite; }
+.drawing.over svg { width: 24px; height: 24px; }
+@keyframes sketching {
+  0%, 100% { transform: translate(-8px, 2px) rotate(-8deg); }
+  50% { transform: translate(8px, -3px) rotate(6deg); }
+}
+
+.shelf { display: flex; flex-wrap: wrap; gap: 10px; padding-left: 8px; }
+.shelf button { width: 62px; height: 62px; padding: 4px; border: 0; border-radius: 3px; background: var(--paper); cursor: pointer; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35); transition: transform 0.15s; }
+.shelf button:nth-child(odd) { rotate: -3deg; }
+.shelf button:nth-child(even) { rotate: 2.5deg; }
+.shelf button:hover { transform: scale(1.1); }
+.shelf img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.shelf button { position: relative; }
+.shelf button.on { outline: 3px solid var(--sun); }
+.shelf b { position: absolute; right: -6px; bottom: -6px; min-width: 20px; height: 20px; border-radius: 50%; background: var(--sun); color: #3a3220; font: 700 0.95rem/20px var(--font-hand), cursive; text-align: center; }
+.caption small { opacity: 0.6; }
+
+/* at the end of a long part: start the next one (it gets its own picture) */
+.mark.next { position: relative; display: inline-block; width: 0; }
+.mark.next button {
+  position: absolute;
+  left: 0.5em;
+  bottom: -0.15em;
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+  padding: 0.05em 0.5em 0.1em;
+  border: 2px dashed color-mix(in srgb, var(--mint) 70%, transparent);
+  border-radius: 0.8em;
+  background: none;
+  color: var(--mint);
+  font-family: var(--font-hand), cursive;
+  font-size: 0.8em;
+  line-height: 1.1;
+  white-space: nowrap;
+  rotate: -2deg;
+  cursor: pointer;
+  pointer-events: auto;
+  animation: jot-in 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+.mark.next button:hover { background: color-mix(in srgb, var(--mint) 18%, transparent); }
+.mark.next svg { width: 0.9em; height: 0.7em; }
+@keyframes jot-in { from { opacity: 0; transform: translateY(8px) scale(0.7); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 980px) {
+  .desk { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 28px 16px 110px; }
+  .margin { position: static; }
+  .mirror { min-height: 36vh; }
+  .foot { padding: 12px 16px; }
+  .frame { max-width: 360px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ---------- /sandbox: compare illustration styles ---------- */
+
+.lab { max-width: 1500px; margin: 0 auto; padding: 32px 32px 80px; font-size: 0.95rem; }
+.lab header { display: flex; align-items: baseline; gap: 20px; margin-bottom: 18px; }
+.lab h1 { margin: 0; font-size: 2.2rem; font-weight: 800; }
+.lab a { color: var(--sun); font-family: var(--font-hand), cursive; font-size: 1.4rem; }
+.lab textarea, .lab input, .lab select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #55514c;
+  border-radius: 8px;
+  background: var(--page-deep);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+.lab textarea { resize: vertical; }
+.lab-field { display: block; }
+.lab-field span, .lab-bar label { display: block; margin-bottom: 4px; color: var(--ink-soft); font-size: 0.8rem; }
+.lab-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin: 14px 0; }
+.lab-bar label { margin: 0; }
+.lab-bar select, .lab-bar input { width: 6.5em; display: block; margin-top: 4px; }
+.lab button {
+  padding: 8px 14px;
+  border: 1px solid #6a655f;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.lab button:hover:not(:disabled) { border-color: var(--sun); color: var(--sun); }
+.lab button:disabled { opacity: 0.4; cursor: default; }
+.lab .lab-go { background: var(--sun); border-color: var(--sun); color: #2b2a28; font-weight: 700; }
+.lab .lab-go:hover:not(:disabled) { color: #2b2a28; filter: brightness(1.08); }
+.lab-house { margin: 0 0 18px; color: var(--ink-soft); font-size: 0.85rem; }
+.lab-house strong { color: var(--mint); font-weight: 500; }
+.lab-house button { margin-left: 10px; padding: 3px 10px; }
+.lab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+.lab-grid article { display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid #4a4743; border-radius: 12px; background: rgba(0, 0, 0, 0.14); }
+.lab-grid article.chosen { border-color: var(--mint); box-shadow: 0 0 0 2px color-mix(in srgb, var(--mint) 40%, transparent); }
+.lab-pic { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 6px; background: var(--paper); }
+.lab-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lab-busy, .lab-empty { position: absolute; inset: 0; display: grid; place-content: center; color: var(--paper-ink); font-family: var(--font-hand), cursive; font-size: 1.4rem; }
+.lab-busy { background: color-mix(in srgb, var(--paper) 80%, transparent); }
+.lab .lab-name { border-color: transparent; background: none; padding: 2px 4px; font-size: 1rem; font-weight: 700; }
+.lab-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.lab-actions button { padding: 5px 10px; }
+.lab-actions small { margin-left: auto; color: var(--ink-soft); }
+.lab-error { margin: 0; color: var(--rose); font-size: 0.8rem; }
+
+/* the four step counts along the bottom of each picture; the one under the pointer lights up */
+.lab-steps { position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(4, 1fr); pointer-events: none; }
+.lab-steps span { display: flex; justify-content: center; align-items: baseline; gap: 4px; padding: 3px 0; background: rgba(30, 28, 26, 0.72); color: var(--ink); font-size: 0.78rem; font-weight: 700; border-right: 1px solid rgba(255, 255, 255, 0.15); }
+.lab-steps span.none { color: #8a857e; font-weight: 400; }
+.lab-steps span.on { background: var(--sun); color: #2b2a28; }
+.lab-steps small { font-size: 0.62rem; font-weight: 400; opacity: 0.8; }
+/* hover a picture: see it at its real size, 1:1 */
+.lab-zoom { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; pointer-events: none; }
+.lab-zoom figure { margin: 0; padding: 6px; background: var(--paper); border-radius: 6px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75); }
+.lab-zoom img { display: block; width: auto; height: auto; max-width: none; }
+.lab-zoom-none { display: grid; place-content: center; color: var(--paper-ink); font-family: var(--font-hand), cursive; font-size: 1.6rem; }
+.lab-zoom figcaption { display: flex; gap: 6px; align-items: center; padding: 6px 2px 0; color: var(--paper-ink); font-size: 0.8rem; }
+.lab-zoom figcaption strong { margin-right: auto; }
+.lab-zoom figcaption span { padding: 2px 8px; border-radius: 999px; opacity: 0.45; }
+.lab-zoom figcaption span.on { background: #2b2a28; color: var(--sun); opacity: 1; font-weight: 700; }
+.lab-zoom figcaption em { font-style: normal; min-width: 3em; text-align: right; }
+
+/* ---------- parts of the story: a labelled line where each one starts ---------- */
+.sheet { container-type: inline-size; }
+.part-start { position: relative; display: inline-block; width: 0; height: 0; }
+.part-start.named::before { /* the dividing line, in the gap above the part's first line */
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 2.15em;
+  width: 100cqw;
+  border-top: 2px dashed color-mix(in srgb, var(--ink) 16%, transparent);
+  transition: border-color 0.3s;
+}
+.part-start button {
+  position: absolute;
+  left: 0;
+  bottom: 2.15em;
+  translate: 0 50%;
+  padding: 0 0.6em 0.08em 0;
+  border: 0;
+  background: var(--page);
+  color: var(--ink-soft);
+  font-family: var(--font-hand), cursive;
+  font-size: 0.7em;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color 0.3s, font-size 0.3s;
+}
+.part-start.on::before { border-color: color-mix(in srgb, var(--mint) 60%, transparent); }
+.part-start.on button { color: var(--mint); font-size: 0.82em; font-weight: 700; }
+
+/* ---------- Pip's notebook: click Pip to see what GLM knows about the story ---------- */
+.pip-face { padding: 0; border: 0; background: none; cursor: pointer; line-height: 0; border-radius: 50%; transition: transform 0.15s; }
+.pip-face:hover { transform: scale(1.15) rotate(-8deg); }
+.book-back { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 24px; background: rgba(20, 19, 18, 0.72); backdrop-filter: blur(3px); }
+.book { display: flex; flex-direction: column; width: min(980px, 100%); max-height: min(86vh, 900px); padding: 26px 30px 18px; border-radius: 10px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7); rotate: -0.6deg; animation: puff 0.3s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.book > header { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
+.book h2 { margin: 0 auto 0 0; font-size: 2rem; font-weight: 800; }
+.book-tabs { display: flex; gap: 6px; }
+.book-tabs button { padding: 2px 14px 4px; border: 2px solid color-mix(in srgb, var(--paper-ink) 30%, transparent); border-radius: 999px; background: none; color: inherit; font-family: var(--font-hand), cursive; font-size: 1.2rem; cursor: pointer; }
+.book-tabs button.on { background: var(--paper-ink); color: var(--paper); border-color: var(--paper-ink); }
+.book-pages { display: grid; grid-template-columns: 1fr 1.25fr; gap: 34px; overflow-y: auto; padding-right: 6px; }
+.book h3 { margin: 14px 0 6px; color: #b07a00; font-family: var(--font-hand), cursive; font-size: 1.5rem; font-weight: 700; }
+.book h3:first-child { margin-top: 0; }
+.book-about { margin: 0; font-size: 1.35rem; line-height: 1.35; font-weight: 600; }
+.book ol, .book ul { margin: 10px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 1.05rem; line-height: 1.35; }
+.book ol b { margin-right: 6px; font-family: var(--font-hand), cursive; font-size: 1.2rem; color: #b07a00; }
+.book ol li.new, .book .facts span.new { background: color-mix(in srgb, var(--mint) 55%, transparent); }
+.book ol li { padding: 2px 6px; margin-left: -6px; border-radius: 6px; }
+.book-new li { font-family: var(--font-hand), cursive; font-size: 1.2rem; line-height: 1.15; }
+.book-new li::before { content: "+ "; color: #2e8a6d; font-weight: 700; }
+.book .who { margin-bottom: 12px; }
+.book .who strong { color: #b07a00; font-size: 1.7rem; }
+.book .who.place strong { color: #2e8a6d; }
+.book .who em { color: color-mix(in srgb, var(--paper-ink) 70%, transparent); font-size: 0.95rem; }
+.book .who .facts span { background: color-mix(in srgb, var(--paper-ink) 10%, transparent); font-size: 1rem; padding: 2px 10px 3px; animation: none; }
+.book pre { flex: 1; margin: 0; padding: 14px 16px; overflow: auto; border-radius: 8px; background: #2b2a28; color: var(--ink); font: 0.9rem/1.55 ui-monospace, Menlo, monospace; }
+.book-empty { color: color-mix(in srgb, var(--paper-ink) 65%, transparent); font-family: var(--font-hand), cursive; font-size: 1.3rem; }
+.book > footer { margin-top: 14px; color: color-mix(in srgb, var(--paper-ink) 65%, transparent); font-size: 0.85rem; }
+.book > footer a { color: inherit; }
+@media (max-width: 760px) { .book-pages { grid-template-columns: 1fr; gap: 10px; } }
+.book .who .look { width: 100%; margin: 2px 0 4px; padding: 6px 10px; border-left: 3px solid #b07a00; background: color-mix(in srgb, #b07a00 10%, transparent); border-radius: 0 6px 6px 0; font-size: 1rem; line-height: 1.35; }
+.book .who .look b { display: block; font-family: var(--font-hand), cursive; font-size: 1.1rem; color: #b07a00; }
